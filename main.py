@@ -15,18 +15,18 @@ def data_scrape(web_url):
         print(f"Found {len(restaurant_tags)} restaurants on the main page.")
 
         # extracting restaurant names & URLs
-        top_10_restaurants = []
-        for tag in restaurant_tags[:10]:  # limiting to top 10 restaurants under each cuisine + top offers
+        top_restaurants = []
+        for tag in restaurant_tags[:1]:  # limiting to top 10 restaurants under each cuisine + top offers
             restaurant_name_tag = tag.find('p', class_="ccl-649204f2a8e630fd ccl-a396bc55704a9c8a ccl-ff5caa8a6f2b96d0 ccl-40ad99f7b47f3781")
             if restaurant_name_tag:
                 restaurant_name = restaurant_name_tag.get_text()  # getting restaurant name
                 restaurant_url = "https://deliveroo.ae" + tag['href']  # getting restaurant's specific URL
                 print(f"Restaurant found: {restaurant_name}")
-                top_10_restaurants.append({'name': restaurant_name, 'url': restaurant_url})
+                top_restaurants.append({'name': restaurant_name, 'url': restaurant_url})
       
         menu_items = []
 
-        for restaurant in top_10_restaurants:
+        for restaurant in top_restaurants:
             print(f"Fetching menu for restaurant: {restaurant['name']}")
             restaurant_menu = []
 
@@ -62,7 +62,7 @@ def data_scrape(web_url):
                 "menu": restaurant_menu
             })
 
-        return top_10_restaurants, menu_items
+        return top_restaurants, menu_items
     else:
         print(f"Failed to fetch data from {web_url}. Status code: {response.status_code}")
         return [], []
@@ -71,7 +71,7 @@ def data_scrape(web_url):
 def write_to_csv(data, filename):
     print(f"Writing data to CSV file: {filename}")
     # defining CSV headers
-    headers = ['Restaurant ID', 'Restaurant Name', 'Menu Item', 'Description', 'Price']
+    headers = ['Restaurant ID', 'Restaurant Name', 'Menu Item', 'Description', 'Price', 'Link']
     
     # opening CSV file in write mode
     with open(filename, mode='w', newline='', encoding='utf-8') as file:
@@ -105,11 +105,11 @@ def main():
         for restaurant, menu in zip(restaurant_names, menus):
             for item in menu['menu']:
                 # appending restaurant ID, restaurant name, menu item details to CSV data
-                    csv_data.append([restaurant_id, restaurant['name'], item['name'], item['description'], item['price']])
+                    csv_data.append([restaurant_id, restaurant['name'], item['name'], item['description'], item['price'], restaurant['url']])
             restaurant_id += 1
 
     # writing the data to CSV
-    write_to_csv(csv_data, 'restaurants_menu.csv')
+    write_to_csv(csv_data, 'restaurants_sample.csv')
     print("All data processed successfully.")
 
 main()

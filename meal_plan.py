@@ -1,8 +1,7 @@
 import pandas as pd
-import random
 
 # Load the CSV file
-file_path = 'restaurants_data.csv'  # Change this to the appropriate file name
+file_path = 'restaurants_sample_with_nutrition.csv'  # Change this to the appropriate file name
 meal_data = pd.read_csv(file_path)
 
 # Remove rows with missing or NaN values in essential columns
@@ -91,7 +90,7 @@ def select_meal(remaining_calories, min_calories, min_protein):
 
 def generate_meal_plan(total_calories, protein_requirement, goal):
     """
-    Generate a full day's meal plan.
+    Generating a full day's meal plan.
     
     This function creates a meal plan by selecting meals for breakfast,
     lunch, dinner, and up to two snacks, aiming to meet the calorie
@@ -134,57 +133,31 @@ def generate_meal_plan(total_calories, protein_requirement, goal):
 
     return selected_meals, total_calories_consumed, total_protein_consumed
 
-def get_user_input(prompt, input_type):
+def run_user_info(name, age, weight, height, gender, goal):
     """
-    Get and validate user input.
-    
-    This function prompts the user for input and validates it based on the expected type.
-    It continues to prompt until valid input is received.
-    
-    Args:
-    prompt (str): Prompt to display to the user
-    input_type (str): Type of input expected ('int', 'float', or 'str')
-    
-    Returns:
-    int, float, or str: Validated user input
-    """
-    while True:
-        try:
-            if input_type == 'int':
-                return int(input(prompt))
-            elif input_type == 'float':
-                return float(input(prompt))
-            elif input_type == 'str':
-                value = input(prompt).lower()
-                if value not in ['male', 'female', 'gain muscle', 'lose weight', 'maintain weight']:
-                    raise ValueError("Invalid input, please try again.")
-                return value
-        except ValueError as e:
-            print(f"Error: {e}. Please try again.")
-
-def run_test_case(name, age, weight, height, gender, goal):
-    """
-    Run a test case and print the results.
-    
     This function calculates the requirements, generates a meal plan,
     and prints the results for a given set of user parameters.
-    
-    Args:
-    name (str): Name of the test case
-    age (int): User's age
-    weight (float): User's weight in kg
-    height (float): User's height in cm
-    gender (str): User's gender
-    goal (str): User's fitness goal
     """
-    print(f"\n--- Test Case: {name} ---")
-    print(f"Age: {age}, Weight: {weight}kg, Height: {height}cm, Gender: {gender}, Goal: {goal}")
 
-    total_calories, protein_requirement = calculate_requirements(weight, height, age, gender, goal)
+    # mapping the integer-coded goal back to its corresponding string
+    if goal == 1:
+        goal_str = 'gain muscle'
+    elif goal == 2:
+        goal_str = 'lose weight'
+    elif goal == 3:
+        goal_str = 'maintain weight'
+
+
+    print(f"\nGenerating {name}'s meal plan!\n")
+    print(f"Age: {age}, Weight: {weight}kg, Height: {height}cm, Gender: {gender}, Goal: {goal_str}")
+
+    # calling calculate_requirements with the string representation of the goal
+    total_calories, protein_requirement = calculate_requirements(weight, height, age, gender, goal_str)
     print(f"Calorie requirement: {total_calories:.2f} calories")
     print(f"Protein requirement: {protein_requirement:.2f} grams")
 
-    meal_plan, total_calories_consumed, total_protein_consumed = generate_meal_plan(total_calories, protein_requirement, goal)
+    # generating meal plan based on the total calories and protein requirement
+    meal_plan, total_calories_consumed, total_protein_consumed = generate_meal_plan(total_calories, protein_requirement, goal_str)
     
     print("\nMeal Plan:")
     for meal_time, meals in meal_plan.items():
@@ -216,36 +189,74 @@ def run_test_case(name, age, weight, height, gender, goal):
         print(f"Meal plan is {-protein_diff:.2f} grams short of protein target.")
 
 def main():
-    """
-    Main function to run the meal plan generator.
-    
-    This function defines test cases, runs them, and then offers
-    the option for the user to input their own data for a custom meal plan.
-    """
     print("Welcome to the Meal Plan Generator!")
-    
-    # Define test cases
-    test_cases = [
-        ("Weight Loss Female", 25, 70, 165, "female", "lose weight"),
-        ("Muscle Gain Male", 30, 80, 180, "male", "gain muscle"),
-        ("Maintenance Female", 40, 60, 160, "female", "maintain weight"),
-        ("Weight Loss Male", 50, 90, 175, "male", "lose weight"),
-        ("Muscle Gain Female", 35, 65, 170, "female", "gain muscle")
-    ]
 
-    # Run test cases
-    for case in test_cases:
-        run_test_case(*case)
+    '''
+    getting user info.
+    '''
+    # getting validated name (string)
+    while True:
+        name = input("Please enter your name: ").strip()
+        # ensuring all parts of the name are alphabetic (excluding spaces)
+        if all(part.isalpha() for part in name.split()):
+            break
+        else:
+            print("Invalid input! Name must contain only letters and spaces. Please try again.")
 
-    # Option for manual input
-    if input("\nWould you like to enter your own data? (y/n): ").lower() == 'y':
-        age = get_user_input("Please enter your age: ", 'int')
-        weight = get_user_input("Please enter your weight in kg: ", 'float')
-        height = get_user_input("Please enter your height in cm: ", 'float')
-        gender = get_user_input("Please enter your gender (male/female): ", 'str')
-        goal = get_user_input("What is your fitness goal (gain muscle, lose weight, maintain weight)?: ", 'str')
+    # getting validated age (integer)
+    while True:
+        try:
+            age = int(input("Please enter your age: "))
+            if age > 0:  # Basic validation for positive age
+                break
+            else:
+                print("Age must be a positive number. Please try again.")
+        except ValueError:
+            print("Invalid input! Please enter a valid number for age.")
 
-        run_test_case("Custom Input", age, weight, height, gender, goal)
+    # getting validated weight (float)
+    while True:
+        try:
+            weight = float(input("Please enter your weight in kg: "))
+            if weight > 0:  # Basic validation for positive weight
+                break
+            else:
+                print("Weight must be a positive number. Please try again.")
+        except ValueError:
+            print("Invalid input! Please enter a valid number for weight.")
+
+    # getting validated height (float)
+    while True:
+        try:
+            height = float(input("Please enter your height in cm: "))
+            if height > 0:  # Basic validation for positive height
+                break
+            else:
+                print("Height must be a positive number. Please try again.")
+        except ValueError:
+            print("Invalid input! Please enter a valid number for height.")
+
+    # getting validated gender (either 'male' or 'female')
+    while True:
+        gender = input("Please enter your gender (male/female): ").lower()
+        if gender in ['male', 'female']:
+            break
+        else:
+            print("Invalid input! Please enter 'male' or 'female'.")
+
+    # getting validated goal (integer with options)
+    while True:
+        try:
+            goal = int(input("What is your fitness goal:\n 1. gain muscle\n 2. lose weight\n 3. maintain weight\n: "))
+            if goal in [1, 2, 3]:
+                break
+            else:
+                print("Invalid choice! Please enter 1, 2, or 3.")
+        except ValueError:
+            print("Invalid input! Please enter a valid number (1, 2, or 3).")
+
+    # Call the function to run the meal plan generator with the user's inputs
+    run_user_info(name, age, weight, height, gender, goal)
 
 if __name__ == "__main__":
     main()

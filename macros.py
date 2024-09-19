@@ -42,8 +42,8 @@ def parse_nutrition_info(info_string):
         return ["N/A", "N/A", "N/A", "N/A"]
 
 # Read the CSV file
-input_file = 'restaurants.csv'
-output_file = 'restaurants_with_nutrition.csv'
+input_file = 'restaurants_sample.csv'
+output_file = 'restaurants_sample_with_nutrition.csv'
 
 try:
     with open(input_file, 'r', newline='', encoding='utf-8') as infile, \
@@ -58,7 +58,7 @@ try:
         writer.writerow(header)
         
         # Process rows in batches
-        batch_size = 20
+        batch_size = 10
         batch = []
         for row in tqdm(reader, desc="Processing menu items"):
             try:

@@ -1,3 +1,6 @@
-requests
+openai
+python-dotenv
+tqdm
 beautifulsoup4
-csv
+requests
+pandas
